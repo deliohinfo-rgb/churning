@@ -3,7 +3,7 @@ Tipo de servidor: Analysis Services
 Servidor: A-SRVMTZ0031  
 Tipo de autenticação: Autenticação do Windows  
 Banco: BI_Comercial_v2  
-----
+
 BI Perdas financeiras
 Modelo semântico: BI Corp - Perdas Financeiras (Andrey Alison Ferreira)
 LInk do modelo semantico: https://app.powerbi.com/onelake/details/me/dataset/ba44e609-e80f-438c-87a7-c1963673224b/overview?experience=power-bi
