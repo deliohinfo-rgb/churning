@@ -10,16 +10,16 @@ Local: Sharepoint (https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx
 Caminho: Documentos/BI_Churn
 
 - Tabela no Sharepoint: **Backlog_NProcessado**
-- Tabela no PowerBI:
+- Tabela no PowerBI: 0_Backlog_NProcessado
 - BI de Referência / Painel / Visual: 
 - Tabela no Sharepoint: **Cobranca**
-- Tabela no PowerBI:
+- Tabela no PowerBI: 0_Cobranca
 - BI de Referência / Painel / Visual: 
 - Tabela no Sharepoint: **Perdas_detalhadas_2024**
-- Tabela no PowerBI:
+- Tabela no PowerBI: --
 - BI de Referência / Painel / Visual: 
 - Tabela no Sharepoint: **Perdas_detalhadas_Atuais**
-- Tabela no PowerBI:
+- Tabela no PowerBI: 0_Perdas_Detalhadas_Atual
 - BI de Referência / Painel / Visual: 
 Formato: xlsx
 
