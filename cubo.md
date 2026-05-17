@@ -14,3 +14,8 @@ Materiais:
 
 
 Para criar as visões é necessário 'juntar' as tabelas
+
+Existe mais de uma linha para cadda id da solicitação
+Veriicado que um dos campos que muda na segudna linha é o produto
+campos: dpp-produto, itemfiscal, rateio centro de custo, valor redução, 
+exemplo: 143189, 531601
