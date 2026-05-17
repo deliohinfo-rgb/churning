@@ -18,7 +18,7 @@ Caminho: Documentos/BI_Churn
 - BI de Referência / Painel / Visual: 
 - Tabela no Sharepoint: **Perdas_detalhadas_2024**
 - Tabela no PowerBI: --
-- BI de Referência / Painel / Visual: 
+- BI de Referência / Painel / Visual: Macro Cenario > Perdas detalhadas
 - Tabela no Sharepoint: **Perdas_detalhadas_Atuais**
 - Tabela no PowerBI: 0_Perdas_Detalhadas_Atual
 - BI de Referência / Painel / Visual: 
