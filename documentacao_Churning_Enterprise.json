@@ -1,0 +1,2517 @@
+{
+    "modelo": "Churning_Enterprise",
+    "gerado_em": "2026-05-16 22:25:49.108824",
+    "versao_script": "1.7.1",
+    "tabelas": [
+        {
+            "name": "0_Backlog_NProcessado",
+            "columns": [
+                {
+                    "name": "Marca",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Grupo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nro",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'ID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Item",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Motivo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Causa",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SubTipo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Rateio",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Status",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SLA",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "_SUBSUBTIPO",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_GR_DIRETO_INDIRETO",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "DataReferencia",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "_AGING",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "_1_A_5",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_6_A_10",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_11_A_30",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_31_A_",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Ano_DataReferencia",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "0_Backlog_NProcessado",
+                    "m_code": "let\n\t\t\t\t    Fonte = SharePoint.Contents(\"https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx\", [ApiVersion = 15]),\n\t\t\t\t    #\"Documentos Compartilhados\" = Fonte{[Name=\"Documentos Compartilhados\"]}[Content],\n\t\t\t\t    BI_Churn = #\"Documentos Compartilhados\"{[Name=\"BI_Churn\"]}[Content],\n\t\t\t\t    #\"Backlog_NProcessado xlsx\" = BI_Churn{[Name=\"Backlog_NProcessado.xlsx\"]}[Content],\n\t\t\t\t    #\"Pasta de Trabalho Importada do Excel\" = Excel.Workbook(#\"Backlog_NProcessado xlsx\"),\n\t\t\t\t    #\"Linhas Filtradas1\" = Table.SelectRows(#\"Pasta de Trabalho Importada do Excel\", each ([Name] = \"Export\")),\n\t\t\t\t    #\"Data Expandido\" = Table.ExpandTableColumn(#\"Linhas Filtradas1\", \"Data\", {\"Column1\", \"Column2\", \"Column3\", \"Column4\", \"Column5\", \"Column6\", \"Column7\", \"Column8\", \"Column9\", \"Column10\", \"Column11\", \"Column12\", \"Column13\", \"Column14\", \"Column15\", \"Column16\", \"Column17\", \"Column18\", \"Column19\"}, {\"Data.Column1\", \"Data.Column2\", \"Data.Column3\", \"Data.Column4\", \"Data.Column5\", \"Data.Column6\", \"Data.Column7\", \"Data.Column8\", \"Data.Column9\", \"Data.Column10\", \"Data.Column11\", \"Data.Column12\", \"Data.Column13\", \"Data.Column14\", \"Data.Column15\", \"Data.Column16\", \"Data.Column17\", \"Data.Column18\", \"Data.Column19\"}),\n\t\t\t\t    #\"Cabeçalhos Promovidos\" = Table.PromoteHeaders(#\"Data Expandido\", [PromoteAllScalars=true]),\n\t\t\t\t    #\"Tipo Alterado\" = Table.TransformColumnTypes(#\"Cabeçalhos Promovidos\",{{\"Export\", type text}, {\"Marca\", type text}, {\"Grupo Econômico\", type text}, {\"Nome Cliente\", type text}, {\"Nro do Docto\", type text}, {\"ID da Solicitação\", Int64.Type}, {\"Nome GR\", type text}, {\"Item Fiscal\", type text}, {\"Data do Cadastro\", type date}, {\"Motivo\", type text}, {\"Causa da Solicitação de Redução\", type text}, {\"SubTipo\", type text}, {\"Rateio Centro De Custo\", type text}, {\"GRC - Grupo Produto\", type text}, {\"GRC - Area Cross\", type text}, {\"GRC - Area Organico\", type text}, {\"Status\", type text}, {\"SLA\", type number}, {\"Valor Redução\", type number}, {\"Export_1\", type text}, {\"Sheet\", type text}, {\"false\", type logical}}),\n\t\t\t\t    #\"Colunas Removidas\" = Table.RemoveColumns(#\"Tipo Alterado\",{\"Export\", \"Export_1\", \"Sheet\", \"false\"}),\n\t\t\t\t    #\"Linhas Filtradas\" = Table.SelectRows(#\"Colunas Removidas\", each ([Grupo Econômico] <> null)),\n\t\t\t\t    #\"Coluna Duplicada\" = Table.DuplicateColumn(#\"Linhas Filtradas\", \"Data do Cadastro\", \"Data do Cadastro - Copiar\"),\n\t\t\t\t    #\"Colunas Renomeadas\" = Table.RenameColumns(#\"Coluna Duplicada\",{{\"Data do Cadastro - Copiar\", \"DataReferencia\"}})\n\t\t\t\tin\n\t\t\t\t    #\"Colunas Renomeadas\""
+                }
+            ]
+        },
+        {
+            "name": "0_Cobranca",
+            "columns": [
+                {
+                    "name": "'Cod",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "CNPJ",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Desc",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Número",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Emissão",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Vencimento",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Vencimento",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Contestacao",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Fatura",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Id",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Status",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "_AGING",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "_31_A_60",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_90",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_61_A_90",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_AGING_CLASSIFICADO",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "0_Cobranca",
+                    "m_code": "let\n\t\t\t\t    Fonte = SharePoint.Contents(\"https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx\", [ApiVersion = 15]),\n\t\t\t\t    #\"Documentos Compartilhados\" = Fonte{[Name=\"Documentos Compartilhados\"]}[Content],\n\t\t\t\t    BI_Churn = #\"Documentos Compartilhados\"{[Name=\"BI_Churn\"]}[Content],\n\t\t\t\t    #\"Cobranca xlsx\" = BI_Churn{[Name=\"Cobranca.xlsx\"]}[Content],\n\t\t\t\t    #\"Pasta de Trabalho Importada do Excel\" = Excel.Workbook(#\"Cobranca xlsx\"),\n\t\t\t\t    Export_Sheet = #\"Pasta de Trabalho Importada do Excel\"{[Item=\"Export\",Kind=\"Sheet\"]}[Data],\n\t\t\t\t    #\"Cabeçalhos Promovidos\" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),\n\t\t\t\t    #\"Tipo Alterado\" = Table.TransformColumnTypes(#\"Cabeçalhos Promovidos\",{{\"Cod Clifor\", Int64.Type}, {\"CNPJ\", type text}, {\"Desc Rateio Centro  Custo\", type text}, {\"Número NF-e\", Int64.Type}, {\"Nome Clifor\", type text}, {\"Emissão\", type date}, {\"Vencimento\", type date}, {\"Vencimento Real\", type date}, {\"Contestacao\", type text}, {\"Fatura\", type text}, {\"Id Parcela\", type text}, {\"Valor a Original\", type number}, {\"Valor a Receber\", type number}, {\"Status Negativação\", type text}, {\"Valor Vencido + Juros e Multa\", type number}}),\n\t\t\t\t    #\"Linhas Filtradas\" = Table.SelectRows(#\"Tipo Alterado\", each ([CNPJ] <> null))\n\t\t\t\tin\n\t\t\t\t    #\"Linhas Filtradas\""
+                }
+            ]
+        },
+        {
+            "name": "0_Perdas_Detalhadas_2024",
+            "columns": [
+                {
+                    "name": "'ID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Prazo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Usuario",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Grupo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "CNPJ/CPF",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Contato",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'CNPJ",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Marca",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Situação",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Descrição",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Cód",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'DPP",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Item",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Unidade",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Motivo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Causa",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SubTipo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Rateio",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Qtde",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "DataReferencia",
+                    "dataType": "dateTime"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "0_Perdas_Detalhadas_2024",
+                    "m_code": "let\n\t\t\t\t    Fonte = SharePoint.Contents(\"https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx\", [ApiVersion = 15]),\n\t\t\t\t    #\"Documentos Compartilhados\" = Fonte{[Name=\"Documentos Compartilhados\"]}[Content],\n\t\t\t\t    BI_Churn = #\"Documentos Compartilhados\"{[Name=\"BI_Churn\"]}[Content],\n\t\t\t\t    #\"Perdas_detalhadas xlsx\" = BI_Churn{[Name=\"Perdas_detalhadas_2024.xlsx\"]}[Content],\n\t\t\t\t    #\"Pasta de Trabalho Importada do Excel\" = Excel.Workbook(#\"Perdas_detalhadas xlsx\"),\n\t\t\t\t    Export_Sheet = #\"Pasta de Trabalho Importada do Excel\"{[Item=\"Export\",Kind=\"Sheet\"]}[Data],\n\t\t\t\t    #\"Cabeçalhos Promovidos\" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),\n\t\t\t\t    #\"Tipo Alterado\" = Table.TransformColumnTypes(#\"Cabeçalhos Promovidos\",{{\"ID Solicitação\", Int64.Type}, {\"Data Inclusão\", type date}, {\"Prazo Aviso Prévio\", Int64.Type}, {\"Usuario Inclusao\", type text}, {\"Data Implantacao\", type date}, {\"Nome Cliente\", type text}, {\"Grupo Econômico\", type text}, {\"CNPJ/CPF\", type text}, {\"Contato\", type text}, {\"CNPJ Filial\", type text}, {\"Marca\", type text}, {\"Situação Cliente\", type text}, {\"Descrição Mês Ano\", type date}, {\"Cód Cliente\", Int64.Type}, {\"DPP - Produto\", type text}, {\"Item Fiscal\", type text}, {\"Data do Cadastro\", type date}, {\"Data Conclusão\", type date}, {\"Unidade Comercial\", type text}, {\"Motivo\", type text}, {\"Causa da Solicitação de Redução\", type text}, {\"SubTipo\", type text}, {\"Nome GR\", type text}, {\"Rateio Centro De Custo\", type text}, {\"GRC - Grupo Produto\", type text}, {\"GRC - Area Cross\", type text}, {\"GRC - Area Organico\", type text}, {\"Valor Redução\", type number}, {\"Qtde IDs Itens Redução\", Int64.Type}}),\n\t\t\t\t    #\"Coluna Duplicada\" = Table.DuplicateColumn(#\"Tipo Alterado\", \"Descrição Mês Ano\", \"Descrição Mês Ano - Copiar\"),\n\t\t\t\t    #\"Colunas Renomeadas\" = Table.RenameColumns(#\"Coluna Duplicada\",{{\"Descrição Mês Ano - Copiar\", \"DataReferencia\"}}),\n\t\t\t\t    // Remover linhas que não tem dados. Como a tabela é importa do BI, ela tem no final algumas linhas com totalizador e filtros. Para não trazer esses dados, filtro criado.\n\t\t\t\t    #\"Linhas Filtradas para remover erros\" = Table.SelectRows(#\"Colunas Renomeadas\", each [Data Inclusão] <> null and [Data Inclusão] <> \"\")\n\t\t\t\tin\n\t\t\t\t    #\"Linhas Filtradas para remover erros\""
+                }
+            ]
+        },
+        {
+            "name": "0_Perdas_Detalhadas_Atual",
+            "columns": [
+                {
+                    "name": "'ID",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Prazo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'Usuario",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Grupo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "CNPJ/CPF",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Contato",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'CNPJ",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Marca",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Situação",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Descrição",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Cód",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "'DPP",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Item",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Unidade",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Motivo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Causa",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SubTipo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Rateio",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Valor",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Qtde",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Tipo",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "GR_DIRETO_INDIRETO",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "REFERENCIA_PERIODO",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "DataReferencia",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'GRC",
+                    "dataType": "string"
+                },
+                {
+                    "name": "OBS",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Ano_Descricao",
+                    "dataType": "string"
+                },
+                {
+                    "name": "2024",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "LegendaSemBranco",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [
+                {
+                    "name": "ValorRescisao_2024",
+                    "expression": "VAR SomaContexto =\n\t\t\t    CALCULATE(\n\t\t\t        SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\t        YEAR('0_Perdas_Detalhadas_Atual'[DataReferencia]) = 2024\n\t\t\t    )\n\t\t\tRETURN\n\t\t\tIF( SomaContexto > 0, SomaContexto, BLANK() )"
+                }
+            ],
+            "partitions": [
+                {
+                    "name": "0_Perdas_Detalhadas_Atual",
+                    "m_code": "let\n\t\t\t\t    Fonte = SharePoint.Contents(\"https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx\", [ApiVersion = 15]),\n\t\t\t\t    #\"Documentos Compartilhados\" = Fonte{[Name=\"Documentos Compartilhados\"]}[Content],\n\t\t\t\t    BI_Churn = #\"Documentos Compartilhados\"{[Name=\"BI_Churn\"]}[Content],\n\t\t\t\t    #\"Perdas_detalhadas xlsx\" = BI_Churn{[Name=\"Perdas_detalhadas_Atual.xlsx\"]}[Content],\n\t\t\t\t    #\"Pasta de Trabalho Importada do Excel\" = Excel.Workbook(#\"Perdas_detalhadas xlsx\"),\n\t\t\t\t    Export_Sheet = #\"Pasta de Trabalho Importada do Excel\"{[Item=\"Export\",Kind=\"Sheet\"]}[Data],\n\t\t\t\t    #\"Cabeçalhos Promovidos\" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),\n\t\t\t\t    #\"Tipo Alterado\" = Table.TransformColumnTypes(#\"Cabeçalhos Promovidos\",{{\"ID Solicitação\", Int64.Type}, {\"Data Inclusão\", type date}, {\"Prazo Aviso Prévio\", Int64.Type}, {\"Usuario Inclusao\", type text}, {\"Data Implantacao\", type date}, {\"Nome Cliente\", type text}, {\"Grupo Econômico\", type text}, {\"CNPJ/CPF\", type text}, {\"Contato\", type text}, {\"CNPJ Filial\", type text}, {\"Marca\", type text}, {\"Situação Cliente\", type text}, {\"Descrição Mês Ano\", type date}, {\"Cód Cliente\", Int64.Type}, {\"DPP - Produto\", type text}, {\"Item Fiscal\", type text}, {\"Data do Cadastro\", type date}, {\"Data Conclusão\", type date}, {\"Unidade Comercial\", type text}, {\"Motivo\", type text}, {\"Causa da Solicitação de Redução\", type text}, {\"SubTipo\", type text}, {\"Nome GR\", type text}, {\"Rateio Centro De Custo\", type text}, {\"GRC - Grupo Produto\", type text}, {\"GRC - Area Cross\", type text}, {\"GRC - Area Organico\", type text}, {\"Valor Redução\", type number}, {\"Qtde IDs Itens Redução\", Int64.Type}}),\n\t\t\t\t    // Remover linhas que não tem dados. Como a tabela é importa do BI, ela tem no final algumas linhas com totalizador e filtros. Para não trazer esses dados, filtro criado.\n\t\t\t\t    #\"Linhas Filtradas para remover erros\" = Table.SelectRows(#\"Tipo Alterado\", each [Data Inclusão] <> null and [Data Inclusão] <> \"\"),\n\t\t\t\t    #\"Consulta Acrescentada\" = Table.Combine({#\"Linhas Filtradas para remover erros\", #\"0_Perdas_Detalhadas_2024\"}),\n\t\t\t\t    #\"Coluna Duplicada\" = Table.DuplicateColumn(#\"Consulta Acrescentada\", \"Descrição Mês Ano\", \"Descrição Mês Ano - Copiar\"),\n\t\t\t\t    #\"Colunas Removidas\" = Table.RemoveColumns(#\"Coluna Duplicada\",{\"DataReferencia\"}),\n\t\t\t\t    #\"Colunas Renomeadas\" = Table.RenameColumns(#\"Colunas Removidas\",{{\"Descrição Mês Ano - Copiar\", \"DataReferencia\"}})\n\t\t\t\tin\n\t\t\t\t    #\"Colunas Renomeadas\""
+                }
+            ]
+        },
+        {
+            "name": "1_Calendario",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Dia",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Semana",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Mes",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Dia",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Mês",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "'Mês",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "Dia_Mes_Ano",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "AnoLegenda",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "1_Calendario",
+                    "m_code": "ADDCOLUMNS(\n\t\t\t\t         CALENDAR(DATE(2020, 1, 1),MAX('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano])),\n\t\t\t\t         \"Ano\", YEAR([Date]),\n\t\t\t\t         \"Mês\", MONTH([Date]),\n\t\t\t\t         \"Dia\", DAY([Date]),\n\t\t\t\t         \"Nome do Mês\", FORMAT([Date],\"mmmm\", \"PT-BR\"),\n\t\t\t\t         \"Dia da Semana\", FORMAT([Date], \"dddd\", \"PT-BR\"),\n\t\t\t\t         \"Semana Ano\", WEEKNUM([Date],2),\n\t\t\t\t         \"Mes Ano\", (MONTH([Date]) & \"/\" & YEAR([Date])),\n\t\t\t\t         \"Dia Mês\", (day([Date]) & \"/\" & MONTH([Date])),\n\t\t\t\t         \"Mês Dia\", ( \"M:\" & MONTH([Date]) & \" / \" & \"D:\" & day([Date])),\n\t\t\t\t         \"Mês e ano nome\", FORMAT([Date],\"mmmm\", \"PT-BR\") &\" \"& YEAR([Date]),\n\t\t\t\t         \"Dia_Mes_Ano\", (DAY([Date]) & \"/\" & MONTH([Date]) & \"/\" & YEAR([Date])\n\t\t\t\t         ))"
+                }
+            ]
+        },
+        {
+            "name": "'5.1_1",
+            "columns": [
+                {
+                    "name": "'Proprietário",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Número",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nome",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Status",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Criado",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "'Contagem",
+                    "dataType": "double"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Corpo",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Visibilidade",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Data",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Modificado",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Unidade",
+                    "dataType": "string"
+                },
+                {
+                    "name": "'Nível",
+                    "dataType": "string"
+                },
+                {
+                    "name": "DataReferencia",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "'5.1_1",
+                    "m_code": "let\n\t\t\t\t    Fonte = Salesforce.Reports(\"https://suportelinx.my.salesforce.com/\", [ApiVersion=48]),\n\t\t\t\t    #\"00O5f00000894gCEAQ\" = Fonte{[Name=\"00O5f00000894gCEAQ\"]}[Data]\n\t\t\t\tin\n\t\t\t\t    #\"00O5f00000894gCEAQ\""
+                }
+            ]
+        },
+        {
+            "name": "5_Casos",
+            "columns": [
+                {
+                    "name": "Id",
+                    "dataType": "string"
+                },
+                {
+                    "name": "IsDeleted",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "CaseNumber",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ContactId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "AccountId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Type",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Status",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Origin",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Subject",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Priority",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Description",
+                    "dataType": "string"
+                },
+                {
+                    "name": "IsClosed",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "ClosedDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "OwnerId",
+                    "dataType": "string"
+                },
+                {
+                    "name": "CreatedDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "ContactPhone",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ContactEmail",
+                    "dataType": "string"
+                },
+                {
+                    "name": "MilestoneStatus",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Assunto__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Categoria__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Resolvido_em__c",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Segmento__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Data_Final_SLA__c",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "CNPJ__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ChamadoId__c",
+                    "dataType": "double"
+                },
+                {
+                    "name": "Data_Inicio_SLA__c",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Descricao_Encerramento__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "NameAccount__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Nivel_1__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Nivel_2__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Nivel_3__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Nivel_4__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Unidade_de_Negocio_Taxonomia__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Unidade_de_Negocio__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Funcionalidade_Taxonomia__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Modulo_Taxonomia__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Numero_Chamado_WFW__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Produto_Taxonomia__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "SubModulo_Taxonomia__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Unidade_Negocio_Fila__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Categoria_Dig__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Tema_Dig__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Email_da_Conta__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Telefone_da_Conta__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Telefone_do_Contato__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Solicitante__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "NameAccountJira__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Responsavel_Caso__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Prioridade__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Servicos2__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Servicos__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Tipo_de_Solicitacao1__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Situacao1__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Idade_do_Caso_em_Dias__c",
+                    "dataType": "double"
+                },
+                {
+                    "name": "Alias_Linx_do_Proprietario_do_Caso__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Produto_AdmFin__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Conta_Aberto__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Conta_Fechado__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Contato_Aberto__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Nivel_fila_owner__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Telefone_da_Conta_Completo__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Telefone_do_Contato_Completo__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Data_Final_SLA_Violado__c",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "Tipo_de_Classificacao__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Celular_Completo__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Telefone_Completo__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Proprietario_Conta__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Resolvido_em_24h__c",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "Multiplos_Agentes__c",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "FCR_Formula__c",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "Proprietario_Caso__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "ID_Contestacao__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Valor_Contestacao__c",
+                    "dataType": "double"
+                },
+                {
+                    "name": "Codigo_Conta__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Email_Owner__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "GrupoEconomico__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Marca__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "R_UnidadeNegocio",
+                    "dataType": "string"
+                },
+                {
+                    "name": "_DataReferencia",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "_Area",
+                    "dataType": "desconhecido"
+                },
+                {
+                    "name": "LastModifiedDate",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Conta_Portal_Maker__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Criado_Jira__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Knowledge__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "sftv__tvCaseId__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "sftv__tvCustomerLink__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "sftv__tvExpirationDate__c",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "sftv__tvSupportLink__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "sftv__txt_ContactFullName__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Resumo_Gerado__c",
+                    "dataType": "boolean"
+                },
+                {
+                    "name": "Estimativa_Jira__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "cliente_retido__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "meses_retido__c",
+                    "dataType": "double"
+                },
+                {
+                    "name": "passou_retencao__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "redres_id__c",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Tipo_do_caso_VOC__c",
+                    "dataType": "string"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "5_Casos",
+                    "m_code": "let\n\t\t\t\t    Fonte = Salesforce.Data(\"https://suportelinx.my.salesforce.com/\", [ApiVersion=48, CreateNavigationProperties=true]),\n\t\t\t\t    Case = Fonte{[Name=\"Case\"]}[Data],\n\t\t\t\t    #\"Linhas Filtradas\" = Table.SelectRows(Case, each [Unidade_de_Negocio__c] = \"a025f00000CTHhNAAX\" or [Unidade_de_Negocio__c] = \"a02TT000007Z3ewYAC\"),\n\t\t\t\t    #\"Unidade_de_Negocio__r Expandido\" = Table.ExpandRecordColumn(#\"Linhas Filtradas\", \"Unidade_de_Negocio__r\", {\"Name\"}, {\"Unidade_de_Negocio__r.Name\"}),\n\t\t\t\t    #\"Colunas Renomeadas\" = Table.RenameColumns(#\"Unidade_de_Negocio__r Expandido\",{{\"Unidade_de_Negocio__r.Name\", \"R_UnidadeNegocio\"}}),\n\t\t\t\t    #\"Linhas Filtradas1\" = Table.SelectRows(#\"Colunas Renomeadas\", each true),\n\t\t\t\t    #\"Colunas Removidas\" = Table.RemoveColumns(#\"Linhas Filtradas1\",{\"MasterRecordId\", \"SourceId\", \"ParentId\", \"SuppliedName\", \"SuppliedEmail\", \"SuppliedPhone\", \"SuppliedCompany\", \"RecordTypeId\", \"Reason\", \"Language\", \"IsEscalated\", \"IsStopped\", \"StopStartDate\", \"CreatedById\", \"LastModifiedById\", \"SystemModstamp\", \"ContactMobile\", \"ContactFax\", \"Comments\", \"LastViewedDate\", \"LastReferencedDate\", \"Demanda_Interna__c\", \"Funcionalidade__c\", \"Issue_Code_Jira__c\", \"Modulo__c\", \"Pesquisa_enviada__c\", \"Possui_Alternativa__c\", \"Product__c\", \"Produto__c\", \"Sistema_Indisponivel__c\", \"Sub_Funcionalidade__c\", \"Sub_Modulo__c\", \"Tema__c\", \"Visualizar_detalhes__c\", \"Nota_CSAT__c\", \"Resposta_Survey__c\", \"Data_Final_Resolucao_do_Caso__c\", \"Quantidade_de_chamados__c\", \"Tags__c\", \"Nivel_10__c\", \"Nivel_5__c\", \"Nivel_6__c\", \"Nivel_7__c\", \"Nivel_8__c\", \"Nivel_9__c\", \"Situacao_Jira__c\", \"Caso_Classificado__c\", \"Priority_Jira__c\", \"Assunto_Dig__c\", \"Legado__c\", \"chamado_transferido__c\", \"Data_Cadastro_WFW__c\", \"Data_Conclusao_WFW__c\", \"Data_Fim_Previsto_WFW__c\", \"Data_Inicio_Real_WFW__c\", \"Data_Inicio_WFW__c\", \"Codigo_Fila_WFW__c\", \"Capital__c\", \"Email__c\", \"Endereco__c\", \"Produto_Conec__c\", \"Responsavel_no_Local__c\", \"Telefone_da_loja__c\", \"Tipo_de_solicitacao__c\", \"Indisponibilidade__c\", \"Produto6__c\", \"Servicos1__c\", \"Situacao__c\", \"Tipo_de_Solicitacao_Encerramento__c\", \"Situacao_Encerramento__c\", \"Expediente__c\", \"Produto5__c\", \"Nivel_4_Encerramento__c\", \"Nivel_5_Encerramento__c\", \"Nivel_6_Encerramento__c\", \"Servicos_Encerramento__c\", \"Indisponibilidade1__c\", \"Aguardando_Cliente_Validar__c\", \"Aguardando_Informa_o_Externa__c\", \"Case__c\", \"team__c\", \"Team_Jira__c\", \"RCA_Dimensao__c\", \"RCA_Detalhe__c\", \"Caso_reaberto__c\", \"Tipo_de_solicitacao_tools__c\", \"Data_Fim_Jira__c\", \"Data_Inicio_Jira__c\", \"SLA_em_Minutos_Jira__c\", \"Issue_type_JIRA__c\", \"Tipo_da_Issue__c\", \"isReOpen_Jira__c\", \"isDone_jira__c\", \"E_mail_da_Conta__c\", \"Nivel_Encerramento_1__c\", \"Nivel_Encerramento_2__c\", \"Nivel_Encerramento_3__c\", \"Nivel_Encerramento_4__c\", \"Nivel_Encerramento_5__c\", \"Nivel_Encerramento_6__c\", \"Farma_Associacoes_e_Redes__c\", \"Delay_55_secs__c\", \"Nivel_Encerramento_10__c\", \"Nivel_Encerramento_7__c\", \"Nivel_Encerramento_8__c\", \"Nivel_Encerramento_9__c\", \"data_release_jira__c\", \"fix_version_jira__c\", \"URL_da_Base_de_Conhecimento_Utilizada__c\", \"base_de_conhecimento__c\", \"Motivo_Contestacao__c\", \"Acesso_ao_portal_dos_canais__c\", \"Chamado_Aberto__c\", \"Descricao_de_cancelamento__c\", \"Escalado__c\", \"Created_By_Viewer__c\", \"Link_Numero_Caso__c\", \"Related_contact_View__c\", \"DDDCelular__c\", \"DDD__c\", \"MobilePhone__c\", \"Phone__c\", \"Email_BigRetail__c\", \"Celular_Solicitante__c\", \"Email_Solicitante__c\", \"Email_do_contato__c\", \"Telefone_Solicitante__c\", \"Direcionado_Fila_Conta__c\", \"Sem_Fila_Conta__c\", \"Notas_Acima_de_4__c\", \"Delay_X_secs__c\", \"DataMesclagem__c\", \"Solicitante_Jira__c\", \"VersaoAfetada_Jira__c\", \"Criado_Visualizador__c\", \"Unidade_de_Negocio_Visivel__c\", \"Caso_original__c\", \"Data_da_Mesclagem__c\", \"WebCnpjCpf__c\", \"Unidade_de_Negocio_de_Abertura__c\", \"Vertical_de_Abertura__c\", \"DataDesvinculoIssue__c\", \"DataVinculoIssue__c\", \"Proprietario_Violacao_SLA__c\", \"Unidade_de_negocio_violacao_SLA__c\", \"Data_primeira_interacao_feed__c\", \"Data_ultima_interacao_feed__c\", \"Aberto_pelo_Franqueado__c\", \"IsFranquia__c\", \"Registro_de_Chamada__c\", \"fmlCaseSourceID__c\", \"fml_Registro_de_Chamada_c__c\", \"EnderecoConta__c\", \"infos_zabbix__c\", \"Classificacao_de_abertura__c\", \"Resolvido_por__c\", \"IdContaLinx__c\", \"UnidadeNegocioCasoPai__c\", \"WO_encerrada__c\", \"WO_relacionada__c\", \"Urljira__c\", \"EquipeProprietarioCaso__c\", \"CreateCase__c\", \"ProdutoConectividade__c\", \"Attachments\", \"Avalia_o_Atendimento_Knowledge_Base__r\", \"CaseArticles\", \"CaseComments\", \"CaseContactRoles\", \"CaseExternalDocuments\", \"CaseMilestones\", \"CaseSolutions\", \"Cases\", \"Caso_original__r\", \"Casos_Contestacoes_de_Valores__r\", \"Casos__r\", \"CombinedAttachments\", \"Conta_Aberto__r\", \"Conta_Fechado__r\", \"Contact\", \"ContactRequests\", \"Contato_Aberto__r\", \"ContentDocumentLinks\", \"CreatedBy\", \"EmailMessages\", \"Emails\", \"EventRelations\", \"Events\", \"FeedSubscriptionsForEntity\", \"Histories\", \"IdContaLinx__r\", \"LastModifiedBy\", \"LiveChatTranscripts\", \"MasterRecord\", \"MessagingSessions\", \"OpenActivities\", \"Owner\", \"Parent\", \"Posts\", \"ProcessInstances\", \"ProcessSteps\", \"Product__r\", \"RecordActionHistories\", \"RecordActions\", \"RecordAssociatedGroups\", \"RecordType\", \"Registro_de_Chamada__r\", \"Registros_de_Chamadas__r\", \"RelatedRecords\", \"Resolvido_por__r\", \"Responsavel_no_Local__r\", \"Shares\", \"Solicitante__r\", \"Source\", \"SurveySubjectEntities\", \"TaskRelations\", \"Tasks\", \"TeamMembers\", \"TeamTemplateRecords\", \"TopicAssignments\", \"UnidadeNegocioCasoPai__r\", \"WorkOrders\", \"ActivityHistories\", \"AttachedContentDocuments\", \"AttachedContentNotes\", \"ArtigoAvaliado__c\", \"YouComm_Ticket_Number__c\", \"Id_Chamado_Maker__c\", \"Integracao_CNPJ__c\", \"Tratativa_Externa_Maker__c\", \"nAcionarCaseAssignmentRule__c\", \"Aberto_pelo_Franqueado__r\"}),\n\t\t\t\t    #\"Linhas Filtradas3\" = Table.SelectRows(#\"Colunas Removidas\", each ([Nivel_2__c] = \"RESCISÕES/REDUÇÕES\")),\n\t\t\t\t    #\"Linhas Filtradas2\" = Table.SelectRows(#\"Linhas Filtradas3\", each ([Status] = \"Aguardando Cliente Validar\" or [Status] = \"Aguardando Informacao Externa\" or [Status] = \"Em aberto\" or [Status] = \"Em Andamento\"))\n\t\t\t\tin\n\t\t\t\t    #\"Linhas Filtradas2\""
+                }
+            ]
+        },
+        {
+            "name": "DateTableTemplate_6fb6f099-1102-4f7d-b901-075798021227",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "DateTableTemplate_6fb6f099-1102-4f7d-b901-075798021227",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_0030387a-34c6-4254-867c-15230e723c10",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_0030387a-34c6-4254-867c-15230e723c10",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2",
+            "columns": [
+                {
+                    "name": "Date",
+                    "dataType": "dateTime"
+                },
+                {
+                    "name": "Ano",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "MonthNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Mês",
+                    "dataType": "string"
+                },
+                {
+                    "name": "QuarterNo",
+                    "dataType": "int64"
+                },
+                {
+                    "name": "Trimestre",
+                    "dataType": "string"
+                },
+                {
+                    "name": "Dia",
+                    "dataType": "int64"
+                }
+            ],
+            "measures": [],
+            "partitions": [
+                {
+                    "name": "LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2",
+                    "m_code": ""
+                }
+            ]
+        },
+        {
+            "name": "Medidas",
+            "columns": [
+                {
+                    "name": "Value",
+                    "dataType": "desconhecido"
+                }
+            ],
+            "measures": [
+                {
+                    "name": "Valor_Churn_Futuro",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]>TODAY()))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_Geral",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_Ano_Atual",
+                    "expression": "```\n\t\t\t\n\t\t\tvar churn = CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual',AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]<=TODAY(),'0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ))))\n\t\t\tvar zeros = IF(churn=BLANK(),0,churn) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_Ano_Anterior",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual',AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]<=TODAY(),'0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=2024)))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Versao_Churning",
+                    "expression": "\"v0.1\"\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_Ano_Atual_e_Futuro",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=2025))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_Ano_Atual_e_Futuro_Rescisao",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual', AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ),'0_Perdas_Detalhadas_Atual'[Tipo]=\"RESCISÃO\")))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_Ano_Atual_e_Futuro_Reducao",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual', AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ),'0_Perdas_Detalhadas_Atual'[Tipo]=\"REDUÇÃO\")))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_Acumulado_Reducao_Atual",
+                    "expression": "CALCULATE([YTD_Churn_Atual_2026],\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Tipo]=\"REDUÇÃO\"))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_Acumulado_Rescisao_Atual",
+                    "expression": "CALCULATE([YTD_Churn_Atual_2026],\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Tipo]=\"RESCISÃO\"))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Versao_Churn",
+                    "expression": "\"v1.5\""
+                },
+                {
+                    "name": "Churn_Acumulado_Direto_Atual",
+                    "expression": "CALCULATE([YTD_Churn_Atual_2026],\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[GR_DIRETO_INDIRETO]=\"DIRETO\"))\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_Acumulado_Indireto_Atual",
+                    "expression": "CALCULATE([YTD_Churn_Atual_2026],\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[GR_DIRETO_INDIRETO]=\"INDIRETO\"))\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_MTD_Acumulado_AnoAnterior",
+                    "expression": "CALCULATE([Valor_Churn_Geral],DATEADD('1_Calendario'[Date],-1,YEAR),ALL('1_Calendario'))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Churn_MAtual-MAnoAnterior",
+                    "expression": "[YTD_Churn_Atual_2026]-[Churn_MTD_Acumulado_AnoAnterior]\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "DifAatual_Apassado",
+                    "expression": "[YTD_Churn_Atual_2026]-[YTD_Churn_Atual_Geral]\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_2024",
+                    "expression": "IF(CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2024))> 0,\n\t\t\tCALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2024)),\n\t\t\tBLANK())\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_Geral",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Diferenca_Atual",
+                    "expression": "[YTD_Churn_Atual_2026] - [YTD_Churn_Atual_2025]\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_DiferencaPercent_Atual",
+                    "expression": "([YTD_Churn_Atual_2026] - [YTD_Churn_Atual_Geral]) / [YTD_Churn_Atual_Geral]\n\t\tformatString: 0%;-0%;0%\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "BacklogTotal",
+                    "expression": "CALCULATE(COUNT('5_Casos'[CaseNumber]))\n\t\tformatString: 0\n\t\tdisplayFolder: Backlog"
+                },
+                {
+                    "name": "IdadeCaso",
+                    "expression": "AVERAGE('5_Casos'[Idade_do_Caso_em_Dias__c])\n\t\tdisplayFolder: Backlog"
+                },
+                {
+                    "name": "BacklogProcessado",
+                    "expression": "```\n\t\t\t\n\t\t\tvar backlog = COUNT('5.1_1 2Ent_Churn_Backlog_Geral_Processado'[Número do caso])\n\t\t\tvar zeros = IF(backlog=BLANK(),0,backlog) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: 0\n\t\tdisplayFolder: Backlog"
+                },
+                {
+                    "name": "Diferenca_Atual",
+                    "expression": "[YTD_Churn_Atual_Geral] - [Valor_Churn_Ano_Anterior]\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "DiferencaPercent_Atual",
+                    "expression": "([YTD_Churn_Atual_Geral] - [Valor_Churn_Ano_Anterior]) / [Valor_Churn_Ano_Anterior]\n\t\tformatString: 0.00%;-0.00%;0.00%\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "BNP_Reducao_Rescisao",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = \n\t\t\tCALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),\n\t\t\tFILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_SUBSUBTIPO]=\"REDUÇÃO/RESCISÃO\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "BNP_Inadimplencia",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = \n\t\t\tCALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),\n\t\t\tFILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_SUBSUBTIPO]=\"INADIMPLÊNCIA\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "BNP_GR_Direto",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = \n\t\t\tCALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),\n\t\t\tFILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_GR_DIRETO_INDIRETO]=\"DIRETO\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "BNP_GR_InDireto",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = \n\t\t\tCALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),\n\t\t\tFILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_GR_DIRETO_INDIRETO]=\"INDIRETO\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "BNP_Valor",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = \n\t\t\tCALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tvalor \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "COB_Valor_Receber",
+                    "expression": "CALCULATE(SUM('0_Cobranca'[Valor a Receber]))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "COB_Valor_Vencido",
+                    "expression": "CALCULATE(SUM('0_Cobranca'[Valor Vencido + Juros e Multa]))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "COB_Contestacoes",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = CALCULATE(COUNT('0_Cobranca'[Contestacao]),\n\t\t\tFILTER('0_Cobranca','0_Cobranca'[Contestacao]=\"SIM\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: 0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "COB_Faturas",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = CALCULATE(COUNT('0_Cobranca'[Fatura]))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: 0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "COB_Clientes",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = CALCULATE(DISTINCTCOUNT('0_Cobranca'[CNPJ]))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: 0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "COB_Valor_Contestacoes",
+                    "expression": "```\n\t\t\t\n\t\t\tvar valor = CALCULATE(SUM('0_Cobranca'[Valor a Receber]),\n\t\t\tFILTER('0_Cobranca','0_Cobranca'[Contestacao]=\"SIM\"))\n\t\t\tvar zeros = IF(valor=BLANK(),0,valor) \n\t\t\treturn \n\t\t\tzeros \n\t\t\t```\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Cobrança"
+                },
+                {
+                    "name": "Valor_Churn_2025",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano] = 2025))\n\t\tformatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "BNP_Valor_pTotal",
+                    "expression": "```\n\t\t\t\n\t\t\tDIVIDE(\n\t\t\t    [BNP_Valor],\n\t\t\t    CALCULATE(\n\t\t\t        [BNP_Valor],\n\t\t\t        ALLSELECTED('0_Backlog_NProcessado')\n\t\t\t    )\n\t\t\t) \n\t\t\t\n\t\t\t```\n\t\tformatString: 0%;-0%;0%\n\t\tdisplayFolder: Backlog_NProcessado"
+                },
+                {
+                    "name": "Valor_Churn_2025_pTotal",
+                    "expression": "DIVIDE(\n\t\t\t    [Valor_Churn_2025],\n\t\t\t    CALCULATE(\n\t\t\t        [Valor_Churn_2025],\n\t\t\t        ALLSELECTED('0_Perdas_Detalhadas_Atual')\n\t\t\t    )\n\t\t\t)\n\t\tformatString: 0%;-0%;0%\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_Geral_pTotal",
+                    "expression": "DIVIDE(\n\t\t\t\t[Valor_Churn_Geral],\n\t\t\t\tCALCULATE(\n\t\t\t        \t[Valor_Churn_Geral],\n\t\t\t\t        ALLSELECTED('0_Perdas_Detalhadas_Atual')\n\t\t\t    )\n\t\t\t)\n\t\tformatString: 0.00%;-0.00%;0.00%\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_2026",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2026))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_2026",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\tFILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano] = 2026))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "LegendaMedida",
+                    "expression": "```\n\t\t\t\n\t\t\tIF(\n\t\t\t    ISBLANK([YTD_Churn_Atual_2024]),\n\t\t\t    BLANK(),\n\t\t\t    \"Churn Atual 2024\"\n\t\t\t)\n\t\t\t\n\t\t\t```\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "LegendaSemBranco",
+                    "expression": "```\n\t\t\t\n\t\t\tIF(\n\t\t\t    ISBLANK('Tabela'[SuaLegenda]) || 'Tabela'[SuaLegenda] = \"\",\n\t\t\t    BLANK(),\n\t\t\t    'Tabela'[SuaLegenda]\n\t\t\t)\n\t\t\t\n\t\t\t```\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Legenda_Rescisao_2024",
+                    "expression": "IF(\n\t\t\t    NOT ISBLANK([ValorRescisao_2024]),\n\t\t\t    SELECTEDVALUE('0_Perdas_Detalhadas_Atual'[Valor Redução]),\n\t\t\t    BLANK()\n\t\t\t)\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_2025",
+                    "expression": "CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2025))\n\t\tformatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "Valor_Churn_Geral_pTotal",
+                    "expression": "DIVIDE(\n\t\t\t    [Valor_Churn_Geral],\n\t\t\t    CALCULATE(\n\t\t\t        [Valor_Churn_Geral],\n\t\t\t        ALLSELECTED('0_Perdas_Detalhadas_Atual')\n\t\t\t    )\n\t\t\t)\n\t\tformatString: 0%;-0%;0%\n\t\tdisplayFolder: Churn_Acumulado"
+                },
+                {
+                    "name": "YTD_Churn_Atual_2025_pTotal",
+                    "expression": "DIVIDE(\n\t\t\t\t[YTD_Churn_Atual_2025],\n\t\t\t\tCALCULATE(\n\t\t\t        \t[YTD_Churn_Atual_2025],\n\t\t\t\t        ALLSELECTED('0_Perdas_Detalhadas_Atual')\n\t\t\t    )\n\t\t\t)\n\t\tformatString: 0.00%;-0.00%;0.00%\n\t\tdisplayFolder: Churn_Acumulado"
+                }
+            ],
+            "partitions": [
+                {
+                    "name": "Medidas",
+                    "m_code": ""
+                }
+            ]
+        }
+    ],
+    "relacionamentos": [
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.'Data Inclusão'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.'Data Implantacao'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.'Data do Cadastro'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.'Data Conclusão'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.'Data Inclusão'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.'Data Implantacao'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.'Data do Cadastro'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.'Data Conclusão'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.'Descrição Mês Ano'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.'Descrição Mês Ano'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.ClosedDate",
+            "toTable": "",
+            "toColumn": "LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.Resolvido_em__c",
+            "toTable": "",
+            "toColumn": "LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.Data_Final_SLA__c",
+            "toTable": "",
+            "toColumn": "LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.Data_Inicio_SLA__c",
+            "toTable": "",
+            "toColumn": "LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.LastModifiedDate",
+            "toTable": "",
+            "toColumn": "LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.'Data de criação'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.'Data da última modificação'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Backlog_NProcessado.'Data do Cadastro'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Cobranca.Vencimento",
+            "toTable": "",
+            "toColumn": "LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Cobranca.'Vencimento Real'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.CreatedDate",
+            "toTable": "",
+            "toColumn": "LocalDateTable_0030387a-34c6-4254-867c-15230e723c10.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "1_Calendario.Date",
+            "toTable": "",
+            "toColumn": "LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_2024.DataReferencia",
+            "toTable": "",
+            "toColumn": "1_Calendario.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Perdas_Detalhadas_Atual.DataReferencia",
+            "toTable": "",
+            "toColumn": "1_Calendario.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Backlog_NProcessado.DataReferencia",
+            "toTable": "",
+            "toColumn": "1_Calendario.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos._DataReferencia",
+            "toTable": "",
+            "toColumn": "1_Calendario.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.DataReferencia",
+            "toTable": "",
+            "toColumn": "5_Casos._DataReferencia"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "0_Cobranca.Emissão",
+            "toTable": "",
+            "toColumn": "1_Calendario.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "5_Casos.sftv__tvExpirationDate__c",
+            "toTable": "",
+            "toColumn": "LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6.Date"
+        },
+        {
+            "fromTable": "",
+            "fromColumn": "1_Calendario.'Mes Ano'",
+            "toTable": "",
+            "toColumn": "LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e.Date"
+        }
+    ],
+    "paginas": [
+        {
+            "id": "20d074bf2ab683db8038",
+            "name": "Acumulado Dados",
+            "visual_types": {
+                "null": 4
+            }
+        },
+        {
+            "id": "30f76f3dca5d261cb18c",
+            "name": "Acumulado Analítico",
+            "visual_types": {
+                "null": 5
+            }
+        },
+        {
+            "id": "321e9bb57257a985b066",
+            "name": "Versão",
+            "visual_types": {
+                "null": 1
+            }
+        },
+        {
+            "id": "79e41c93ad6293c482eb",
+            "name": "Capa",
+            "visual_types": {}
+        },
+        {
+            "id": "9df0ec80b615db0fb5b6",
+            "name": "Backlog Não Processado Dados",
+            "visual_types": {
+                "null": 2
+            }
+        },
+        {
+            "id": "a6204462732deac407d8",
+            "name": "Acumulado por Tipo",
+            "visual_types": {
+                "null": 18
+            }
+        },
+        {
+            "id": "aa5c3132081666051780",
+            "name": "Cobrança",
+            "visual_types": {
+                "null": 28
+            }
+        },
+        {
+            "id": "db4f34fbbe50d2ad0cb9",
+            "name": "Backlog",
+            "visual_types": {
+                "null": 26
+            }
+        },
+        {
+            "id": "f4fce92e0b07191a819d",
+            "name": "Backlog Não Processado",
+            "visual_types": {
+                "null": 31
+            }
+        },
+        {
+            "id": "fa2f8571d6cb6ab8cabd",
+            "name": "Acumulado",
+            "visual_types": {
+                "null": 26
+            }
+        }
+    ]
+}

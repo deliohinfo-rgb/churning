@@ -1,0 +1,321 @@
+<?xml version='1.0' encoding='utf-8'?>
+<DocumentacaoPBIP modelo="Churning_Enterprise" gerado_em="2026-05-16 22:25:49.113813" versao_script="1.7.1"><Tabelas><Tabela nome="0_Backlog_NProcessado"><Colunas><Coluna nome="Marca" tipo="string" /><Coluna nome="'Grupo" tipo="string" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Nro" tipo="string" /><Coluna nome="'ID" tipo="int64" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Item" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="Motivo" tipo="string" /><Coluna nome="'Causa" tipo="string" /><Coluna nome="SubTipo" tipo="string" /><Coluna nome="'Rateio" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="Status" tipo="string" /><Coluna nome="SLA" tipo="double" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="_SUBSUBTIPO" tipo="desconhecido" /><Coluna nome="_GR_DIRETO_INDIRETO" tipo="desconhecido" /><Coluna nome="DataReferencia" tipo="dateTime" /><Coluna nome="_AGING" tipo="int64" /><Coluna nome="_1_A_5" tipo="desconhecido" /><Coluna nome="_6_A_10" tipo="desconhecido" /><Coluna nome="_11_A_30" tipo="desconhecido" /><Coluna nome="_31_A_" tipo="desconhecido" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="Ano_DataReferencia" tipo="desconhecido" /></Colunas><Medidas /><Partitions><Partition nome="0_Backlog_NProcessado">let
+				    Fonte = SharePoint.Contents("https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx", [ApiVersion = 15]),
+				    #"Documentos Compartilhados" = Fonte{[Name="Documentos Compartilhados"]}[Content],
+				    BI_Churn = #"Documentos Compartilhados"{[Name="BI_Churn"]}[Content],
+				    #"Backlog_NProcessado xlsx" = BI_Churn{[Name="Backlog_NProcessado.xlsx"]}[Content],
+				    #"Pasta de Trabalho Importada do Excel" = Excel.Workbook(#"Backlog_NProcessado xlsx"),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Pasta de Trabalho Importada do Excel", each ([Name] = "Export")),
+				    #"Data Expandido" = Table.ExpandTableColumn(#"Linhas Filtradas1", "Data", {"Column1", "Column2", "Column3", "Column4", "Column5", "Column6", "Column7", "Column8", "Column9", "Column10", "Column11", "Column12", "Column13", "Column14", "Column15", "Column16", "Column17", "Column18", "Column19"}, {"Data.Column1", "Data.Column2", "Data.Column3", "Data.Column4", "Data.Column5", "Data.Column6", "Data.Column7", "Data.Column8", "Data.Column9", "Data.Column10", "Data.Column11", "Data.Column12", "Data.Column13", "Data.Column14", "Data.Column15", "Data.Column16", "Data.Column17", "Data.Column18", "Data.Column19"}),
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Data Expandido", [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Export", type text}, {"Marca", type text}, {"Grupo Econômico", type text}, {"Nome Cliente", type text}, {"Nro do Docto", type text}, {"ID da Solicitação", Int64.Type}, {"Nome GR", type text}, {"Item Fiscal", type text}, {"Data do Cadastro", type date}, {"Motivo", type text}, {"Causa da Solicitação de Redução", type text}, {"SubTipo", type text}, {"Rateio Centro De Custo", type text}, {"GRC - Grupo Produto", type text}, {"GRC - Area Cross", type text}, {"GRC - Area Organico", type text}, {"Status", type text}, {"SLA", type number}, {"Valor Redução", type number}, {"Export_1", type text}, {"Sheet", type text}, {"false", type logical}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Export", "Export_1", "Sheet", "false"}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Colunas Removidas", each ([Grupo Econômico] &lt;&gt; null)),
+				    #"Coluna Duplicada" = Table.DuplicateColumn(#"Linhas Filtradas", "Data do Cadastro", "Data do Cadastro - Copiar"),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Coluna Duplicada",{{"Data do Cadastro - Copiar", "DataReferencia"}})
+				in
+				    #"Colunas Renomeadas"</Partition></Partitions></Tabela><Tabela nome="0_Cobranca"><Colunas><Coluna nome="'Cod" tipo="int64" /><Coluna nome="CNPJ" tipo="string" /><Coluna nome="'Desc" tipo="string" /><Coluna nome="'Número" tipo="int64" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="Emissão" tipo="dateTime" /><Coluna nome="Vencimento" tipo="dateTime" /><Coluna nome="'Vencimento" tipo="dateTime" /><Coluna nome="Contestacao" tipo="string" /><Coluna nome="Fatura" tipo="string" /><Coluna nome="'Id" tipo="string" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="'Status" tipo="string" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="_AGING" tipo="int64" /><Coluna nome="_31_A_60" tipo="desconhecido" /><Coluna nome="_90" tipo="desconhecido" /><Coluna nome="_61_A_90" tipo="desconhecido" /><Coluna nome="_AGING_CLASSIFICADO" tipo="desconhecido" /></Colunas><Medidas /><Partitions><Partition nome="0_Cobranca">let
+				    Fonte = SharePoint.Contents("https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx", [ApiVersion = 15]),
+				    #"Documentos Compartilhados" = Fonte{[Name="Documentos Compartilhados"]}[Content],
+				    BI_Churn = #"Documentos Compartilhados"{[Name="BI_Churn"]}[Content],
+				    #"Cobranca xlsx" = BI_Churn{[Name="Cobranca.xlsx"]}[Content],
+				    #"Pasta de Trabalho Importada do Excel" = Excel.Workbook(#"Cobranca xlsx"),
+				    Export_Sheet = #"Pasta de Trabalho Importada do Excel"{[Item="Export",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"Cod Clifor", Int64.Type}, {"CNPJ", type text}, {"Desc Rateio Centro  Custo", type text}, {"Número NF-e", Int64.Type}, {"Nome Clifor", type text}, {"Emissão", type date}, {"Vencimento", type date}, {"Vencimento Real", type date}, {"Contestacao", type text}, {"Fatura", type text}, {"Id Parcela", type text}, {"Valor a Original", type number}, {"Valor a Receber", type number}, {"Status Negativação", type text}, {"Valor Vencido + Juros e Multa", type number}}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Tipo Alterado", each ([CNPJ] &lt;&gt; null))
+				in
+				    #"Linhas Filtradas"</Partition></Partitions></Tabela><Tabela nome="0_Perdas_Detalhadas_2024"><Colunas><Coluna nome="'ID" tipo="int64" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Prazo" tipo="int64" /><Coluna nome="'Usuario" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Grupo" tipo="string" /><Coluna nome="CNPJ/CPF" tipo="string" /><Coluna nome="Contato" tipo="string" /><Coluna nome="'CNPJ" tipo="string" /><Coluna nome="Marca" tipo="string" /><Coluna nome="'Situação" tipo="string" /><Coluna nome="'Descrição" tipo="dateTime" /><Coluna nome="'Cód" tipo="int64" /><Coluna nome="'DPP" tipo="string" /><Coluna nome="'Item" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Unidade" tipo="string" /><Coluna nome="Motivo" tipo="string" /><Coluna nome="'Causa" tipo="string" /><Coluna nome="SubTipo" tipo="string" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Rateio" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="'Qtde" tipo="int64" /><Coluna nome="DataReferencia" tipo="dateTime" /></Colunas><Medidas /><Partitions><Partition nome="0_Perdas_Detalhadas_2024">let
+				    Fonte = SharePoint.Contents("https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx", [ApiVersion = 15]),
+				    #"Documentos Compartilhados" = Fonte{[Name="Documentos Compartilhados"]}[Content],
+				    BI_Churn = #"Documentos Compartilhados"{[Name="BI_Churn"]}[Content],
+				    #"Perdas_detalhadas xlsx" = BI_Churn{[Name="Perdas_detalhadas_2024.xlsx"]}[Content],
+				    #"Pasta de Trabalho Importada do Excel" = Excel.Workbook(#"Perdas_detalhadas xlsx"),
+				    Export_Sheet = #"Pasta de Trabalho Importada do Excel"{[Item="Export",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"ID Solicitação", Int64.Type}, {"Data Inclusão", type date}, {"Prazo Aviso Prévio", Int64.Type}, {"Usuario Inclusao", type text}, {"Data Implantacao", type date}, {"Nome Cliente", type text}, {"Grupo Econômico", type text}, {"CNPJ/CPF", type text}, {"Contato", type text}, {"CNPJ Filial", type text}, {"Marca", type text}, {"Situação Cliente", type text}, {"Descrição Mês Ano", type date}, {"Cód Cliente", Int64.Type}, {"DPP - Produto", type text}, {"Item Fiscal", type text}, {"Data do Cadastro", type date}, {"Data Conclusão", type date}, {"Unidade Comercial", type text}, {"Motivo", type text}, {"Causa da Solicitação de Redução", type text}, {"SubTipo", type text}, {"Nome GR", type text}, {"Rateio Centro De Custo", type text}, {"GRC - Grupo Produto", type text}, {"GRC - Area Cross", type text}, {"GRC - Area Organico", type text}, {"Valor Redução", type number}, {"Qtde IDs Itens Redução", Int64.Type}}),
+				    #"Coluna Duplicada" = Table.DuplicateColumn(#"Tipo Alterado", "Descrição Mês Ano", "Descrição Mês Ano - Copiar"),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Coluna Duplicada",{{"Descrição Mês Ano - Copiar", "DataReferencia"}}),
+				    // Remover linhas que não tem dados. Como a tabela é importa do BI, ela tem no final algumas linhas com totalizador e filtros. Para não trazer esses dados, filtro criado.
+				    #"Linhas Filtradas para remover erros" = Table.SelectRows(#"Colunas Renomeadas", each [Data Inclusão] &lt;&gt; null and [Data Inclusão] &lt;&gt; "")
+				in
+				    #"Linhas Filtradas para remover erros"</Partition></Partitions></Tabela><Tabela nome="0_Perdas_Detalhadas_Atual"><Colunas><Coluna nome="'ID" tipo="int64" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Prazo" tipo="int64" /><Coluna nome="'Usuario" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Grupo" tipo="string" /><Coluna nome="CNPJ/CPF" tipo="string" /><Coluna nome="Contato" tipo="string" /><Coluna nome="'CNPJ" tipo="string" /><Coluna nome="Marca" tipo="string" /><Coluna nome="'Situação" tipo="string" /><Coluna nome="'Descrição" tipo="dateTime" /><Coluna nome="'Cód" tipo="int64" /><Coluna nome="'DPP" tipo="string" /><Coluna nome="'Item" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Unidade" tipo="string" /><Coluna nome="Motivo" tipo="string" /><Coluna nome="'Causa" tipo="string" /><Coluna nome="SubTipo" tipo="string" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="'Rateio" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="'Valor" tipo="double" /><Coluna nome="'Qtde" tipo="int64" /><Coluna nome="Tipo" tipo="desconhecido" /><Coluna nome="GR_DIRETO_INDIRETO" tipo="desconhecido" /><Coluna nome="REFERENCIA_PERIODO" tipo="desconhecido" /><Coluna nome="DataReferencia" tipo="dateTime" /><Coluna nome="'GRC" tipo="string" /><Coluna nome="OBS" tipo="string" /><Coluna nome="Ano_Descricao" tipo="string" /><Coluna nome="2024" tipo="desconhecido" /><Coluna nome="LegendaSemBranco" tipo="desconhecido" /></Colunas><Medidas><Medida nome="ValorRescisao_2024">VAR SomaContexto =
+			    CALCULATE(
+			        SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			        YEAR('0_Perdas_Detalhadas_Atual'[DataReferencia]) = 2024
+			    )
+			RETURN
+			IF( SomaContexto &gt; 0, SomaContexto, BLANK() )</Medida></Medidas><Partitions><Partition nome="0_Perdas_Detalhadas_Atual">let
+				    Fonte = SharePoint.Contents("https://grupolinx.sharepoint.com/sites/Grupo_Suporte_EasyLinx", [ApiVersion = 15]),
+				    #"Documentos Compartilhados" = Fonte{[Name="Documentos Compartilhados"]}[Content],
+				    BI_Churn = #"Documentos Compartilhados"{[Name="BI_Churn"]}[Content],
+				    #"Perdas_detalhadas xlsx" = BI_Churn{[Name="Perdas_detalhadas_Atual.xlsx"]}[Content],
+				    #"Pasta de Trabalho Importada do Excel" = Excel.Workbook(#"Perdas_detalhadas xlsx"),
+				    Export_Sheet = #"Pasta de Trabalho Importada do Excel"{[Item="Export",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"ID Solicitação", Int64.Type}, {"Data Inclusão", type date}, {"Prazo Aviso Prévio", Int64.Type}, {"Usuario Inclusao", type text}, {"Data Implantacao", type date}, {"Nome Cliente", type text}, {"Grupo Econômico", type text}, {"CNPJ/CPF", type text}, {"Contato", type text}, {"CNPJ Filial", type text}, {"Marca", type text}, {"Situação Cliente", type text}, {"Descrição Mês Ano", type date}, {"Cód Cliente", Int64.Type}, {"DPP - Produto", type text}, {"Item Fiscal", type text}, {"Data do Cadastro", type date}, {"Data Conclusão", type date}, {"Unidade Comercial", type text}, {"Motivo", type text}, {"Causa da Solicitação de Redução", type text}, {"SubTipo", type text}, {"Nome GR", type text}, {"Rateio Centro De Custo", type text}, {"GRC - Grupo Produto", type text}, {"GRC - Area Cross", type text}, {"GRC - Area Organico", type text}, {"Valor Redução", type number}, {"Qtde IDs Itens Redução", Int64.Type}}),
+				    // Remover linhas que não tem dados. Como a tabela é importa do BI, ela tem no final algumas linhas com totalizador e filtros. Para não trazer esses dados, filtro criado.
+				    #"Linhas Filtradas para remover erros" = Table.SelectRows(#"Tipo Alterado", each [Data Inclusão] &lt;&gt; null and [Data Inclusão] &lt;&gt; ""),
+				    #"Consulta Acrescentada" = Table.Combine({#"Linhas Filtradas para remover erros", #"0_Perdas_Detalhadas_2024"}),
+				    #"Coluna Duplicada" = Table.DuplicateColumn(#"Consulta Acrescentada", "Descrição Mês Ano", "Descrição Mês Ano - Copiar"),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Coluna Duplicada",{"DataReferencia"}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Colunas Removidas",{{"Descrição Mês Ano - Copiar", "DataReferencia"}})
+				in
+				    #"Colunas Renomeadas"</Partition></Partitions></Tabela><Tabela nome="1_Calendario"><Colunas><Coluna nome="Date" tipo="desconhecido" /><Coluna nome="Ano" tipo="string" /><Coluna nome="Mês" tipo="desconhecido" /><Coluna nome="Dia" tipo="desconhecido" /><Coluna nome="'Nome" tipo="desconhecido" /><Coluna nome="'Dia" tipo="desconhecido" /><Coluna nome="'Semana" tipo="desconhecido" /><Coluna nome="'Mes" tipo="dateTime" /><Coluna nome="'Dia" tipo="desconhecido" /><Coluna nome="'Mês" tipo="desconhecido" /><Coluna nome="'Mês" tipo="desconhecido" /><Coluna nome="Dia_Mes_Ano" tipo="desconhecido" /><Coluna nome="AnoLegenda" tipo="desconhecido" /></Colunas><Medidas /><Partitions><Partition nome="1_Calendario">ADDCOLUMNS(
+				         CALENDAR(DATE(2020, 1, 1),MAX('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano])),
+				         "Ano", YEAR([Date]),
+				         "Mês", MONTH([Date]),
+				         "Dia", DAY([Date]),
+				         "Nome do Mês", FORMAT([Date],"mmmm", "PT-BR"),
+				         "Dia da Semana", FORMAT([Date], "dddd", "PT-BR"),
+				         "Semana Ano", WEEKNUM([Date],2),
+				         "Mes Ano", (MONTH([Date]) &amp; "/" &amp; YEAR([Date])),
+				         "Dia Mês", (day([Date]) &amp; "/" &amp; MONTH([Date])),
+				         "Mês Dia", ( "M:" &amp; MONTH([Date]) &amp; " / " &amp; "D:" &amp; day([Date])),
+				         "Mês e ano nome", FORMAT([Date],"mmmm", "PT-BR") &amp;" "&amp; YEAR([Date]),
+				         "Dia_Mes_Ano", (DAY([Date]) &amp; "/" &amp; MONTH([Date]) &amp; "/" &amp; YEAR([Date])
+				         ))</Partition></Partitions></Tabela><Tabela nome="'5.1_1"><Colunas><Coluna nome="'Proprietário" tipo="string" /><Coluna nome="'Número" tipo="string" /><Coluna nome="'Nome" tipo="string" /><Coluna nome="Status" tipo="string" /><Coluna nome="'Criado" tipo="string" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="'Contagem" tipo="double" /><Coluna nome="'Data" tipo="dateTime" /><Coluna nome="Corpo" tipo="string" /><Coluna nome="Visibilidade" tipo="string" /><Coluna nome="'Data" tipo="string" /><Coluna nome="'Modificado" tipo="string" /><Coluna nome="'Unidade" tipo="string" /><Coluna nome="'Nível" tipo="string" /><Coluna nome="DataReferencia" tipo="desconhecido" /></Colunas><Medidas /><Partitions><Partition nome="'5.1_1">let
+				    Fonte = Salesforce.Reports("https://suportelinx.my.salesforce.com/", [ApiVersion=48]),
+				    #"00O5f00000894gCEAQ" = Fonte{[Name="00O5f00000894gCEAQ"]}[Data]
+				in
+				    #"00O5f00000894gCEAQ"</Partition></Partitions></Tabela><Tabela nome="5_Casos"><Colunas><Coluna nome="Id" tipo="string" /><Coluna nome="IsDeleted" tipo="boolean" /><Coluna nome="CaseNumber" tipo="string" /><Coluna nome="ContactId" tipo="string" /><Coluna nome="AccountId" tipo="string" /><Coluna nome="Type" tipo="string" /><Coluna nome="Status" tipo="string" /><Coluna nome="Origin" tipo="string" /><Coluna nome="Subject" tipo="string" /><Coluna nome="Priority" tipo="string" /><Coluna nome="Description" tipo="string" /><Coluna nome="IsClosed" tipo="boolean" /><Coluna nome="ClosedDate" tipo="dateTime" /><Coluna nome="OwnerId" tipo="string" /><Coluna nome="CreatedDate" tipo="dateTime" /><Coluna nome="ContactPhone" tipo="string" /><Coluna nome="ContactEmail" tipo="string" /><Coluna nome="MilestoneStatus" tipo="string" /><Coluna nome="Assunto__c" tipo="string" /><Coluna nome="Categoria__c" tipo="string" /><Coluna nome="Resolvido_em__c" tipo="dateTime" /><Coluna nome="Segmento__c" tipo="string" /><Coluna nome="Data_Final_SLA__c" tipo="dateTime" /><Coluna nome="CNPJ__c" tipo="string" /><Coluna nome="ChamadoId__c" tipo="double" /><Coluna nome="Data_Inicio_SLA__c" tipo="dateTime" /><Coluna nome="Descricao_Encerramento__c" tipo="string" /><Coluna nome="NameAccount__c" tipo="string" /><Coluna nome="Nivel_1__c" tipo="string" /><Coluna nome="Nivel_2__c" tipo="string" /><Coluna nome="Nivel_3__c" tipo="string" /><Coluna nome="Nivel_4__c" tipo="string" /><Coluna nome="Unidade_de_Negocio_Taxonomia__c" tipo="string" /><Coluna nome="Unidade_de_Negocio__c" tipo="string" /><Coluna nome="Funcionalidade_Taxonomia__c" tipo="string" /><Coluna nome="Modulo_Taxonomia__c" tipo="string" /><Coluna nome="Numero_Chamado_WFW__c" tipo="string" /><Coluna nome="Produto_Taxonomia__c" tipo="string" /><Coluna nome="SubModulo_Taxonomia__c" tipo="string" /><Coluna nome="Unidade_Negocio_Fila__c" tipo="string" /><Coluna nome="Categoria_Dig__c" tipo="string" /><Coluna nome="Tema_Dig__c" tipo="string" /><Coluna nome="Email_da_Conta__c" tipo="string" /><Coluna nome="Telefone_da_Conta__c" tipo="string" /><Coluna nome="Telefone_do_Contato__c" tipo="string" /><Coluna nome="Solicitante__c" tipo="string" /><Coluna nome="NameAccountJira__c" tipo="string" /><Coluna nome="Responsavel_Caso__c" tipo="string" /><Coluna nome="Prioridade__c" tipo="string" /><Coluna nome="Servicos2__c" tipo="string" /><Coluna nome="Servicos__c" tipo="string" /><Coluna nome="Tipo_de_Solicitacao1__c" tipo="string" /><Coluna nome="Situacao1__c" tipo="string" /><Coluna nome="Idade_do_Caso_em_Dias__c" tipo="double" /><Coluna nome="Alias_Linx_do_Proprietario_do_Caso__c" tipo="string" /><Coluna nome="Produto_AdmFin__c" tipo="string" /><Coluna nome="Conta_Aberto__c" tipo="string" /><Coluna nome="Conta_Fechado__c" tipo="string" /><Coluna nome="Contato_Aberto__c" tipo="string" /><Coluna nome="Nivel_fila_owner__c" tipo="string" /><Coluna nome="Telefone_da_Conta_Completo__c" tipo="string" /><Coluna nome="Telefone_do_Contato_Completo__c" tipo="string" /><Coluna nome="Data_Final_SLA_Violado__c" tipo="boolean" /><Coluna nome="Tipo_de_Classificacao__c" tipo="string" /><Coluna nome="Celular_Completo__c" tipo="string" /><Coluna nome="Telefone_Completo__c" tipo="string" /><Coluna nome="Proprietario_Conta__c" tipo="string" /><Coluna nome="Resolvido_em_24h__c" tipo="boolean" /><Coluna nome="Multiplos_Agentes__c" tipo="boolean" /><Coluna nome="FCR_Formula__c" tipo="boolean" /><Coluna nome="Proprietario_Caso__c" tipo="string" /><Coluna nome="ID_Contestacao__c" tipo="string" /><Coluna nome="Valor_Contestacao__c" tipo="double" /><Coluna nome="Codigo_Conta__c" tipo="string" /><Coluna nome="Email_Owner__c" tipo="string" /><Coluna nome="GrupoEconomico__c" tipo="string" /><Coluna nome="Marca__c" tipo="string" /><Coluna nome="R_UnidadeNegocio" tipo="string" /><Coluna nome="_DataReferencia" tipo="desconhecido" /><Coluna nome="_Area" tipo="desconhecido" /><Coluna nome="LastModifiedDate" tipo="dateTime" /><Coluna nome="Conta_Portal_Maker__c" tipo="string" /><Coluna nome="Criado_Jira__c" tipo="string" /><Coluna nome="Knowledge__c" tipo="string" /><Coluna nome="sftv__tvCaseId__c" tipo="string" /><Coluna nome="sftv__tvCustomerLink__c" tipo="string" /><Coluna nome="sftv__tvExpirationDate__c" tipo="dateTime" /><Coluna nome="sftv__tvSupportLink__c" tipo="string" /><Coluna nome="sftv__txt_ContactFullName__c" tipo="string" /><Coluna nome="Resumo_Gerado__c" tipo="boolean" /><Coluna nome="Estimativa_Jira__c" tipo="string" /><Coluna nome="cliente_retido__c" tipo="string" /><Coluna nome="meses_retido__c" tipo="double" /><Coluna nome="passou_retencao__c" tipo="string" /><Coluna nome="redres_id__c" tipo="string" /><Coluna nome="Tipo_do_caso_VOC__c" tipo="string" /></Colunas><Medidas /><Partitions><Partition nome="5_Casos">let
+				    Fonte = Salesforce.Data("https://suportelinx.my.salesforce.com/", [ApiVersion=48, CreateNavigationProperties=true]),
+				    Case = Fonte{[Name="Case"]}[Data],
+				    #"Linhas Filtradas" = Table.SelectRows(Case, each [Unidade_de_Negocio__c] = "a025f00000CTHhNAAX" or [Unidade_de_Negocio__c] = "a02TT000007Z3ewYAC"),
+				    #"Unidade_de_Negocio__r Expandido" = Table.ExpandRecordColumn(#"Linhas Filtradas", "Unidade_de_Negocio__r", {"Name"}, {"Unidade_de_Negocio__r.Name"}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Unidade_de_Negocio__r Expandido",{{"Unidade_de_Negocio__r.Name", "R_UnidadeNegocio"}}),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Colunas Renomeadas", each true),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Linhas Filtradas1",{"MasterRecordId", "SourceId", "ParentId", "SuppliedName", "SuppliedEmail", "SuppliedPhone", "SuppliedCompany", "RecordTypeId", "Reason", "Language", "IsEscalated", "IsStopped", "StopStartDate", "CreatedById", "LastModifiedById", "SystemModstamp", "ContactMobile", "ContactFax", "Comments", "LastViewedDate", "LastReferencedDate", "Demanda_Interna__c", "Funcionalidade__c", "Issue_Code_Jira__c", "Modulo__c", "Pesquisa_enviada__c", "Possui_Alternativa__c", "Product__c", "Produto__c", "Sistema_Indisponivel__c", "Sub_Funcionalidade__c", "Sub_Modulo__c", "Tema__c", "Visualizar_detalhes__c", "Nota_CSAT__c", "Resposta_Survey__c", "Data_Final_Resolucao_do_Caso__c", "Quantidade_de_chamados__c", "Tags__c", "Nivel_10__c", "Nivel_5__c", "Nivel_6__c", "Nivel_7__c", "Nivel_8__c", "Nivel_9__c", "Situacao_Jira__c", "Caso_Classificado__c", "Priority_Jira__c", "Assunto_Dig__c", "Legado__c", "chamado_transferido__c", "Data_Cadastro_WFW__c", "Data_Conclusao_WFW__c", "Data_Fim_Previsto_WFW__c", "Data_Inicio_Real_WFW__c", "Data_Inicio_WFW__c", "Codigo_Fila_WFW__c", "Capital__c", "Email__c", "Endereco__c", "Produto_Conec__c", "Responsavel_no_Local__c", "Telefone_da_loja__c", "Tipo_de_solicitacao__c", "Indisponibilidade__c", "Produto6__c", "Servicos1__c", "Situacao__c", "Tipo_de_Solicitacao_Encerramento__c", "Situacao_Encerramento__c", "Expediente__c", "Produto5__c", "Nivel_4_Encerramento__c", "Nivel_5_Encerramento__c", "Nivel_6_Encerramento__c", "Servicos_Encerramento__c", "Indisponibilidade1__c", "Aguardando_Cliente_Validar__c", "Aguardando_Informa_o_Externa__c", "Case__c", "team__c", "Team_Jira__c", "RCA_Dimensao__c", "RCA_Detalhe__c", "Caso_reaberto__c", "Tipo_de_solicitacao_tools__c", "Data_Fim_Jira__c", "Data_Inicio_Jira__c", "SLA_em_Minutos_Jira__c", "Issue_type_JIRA__c", "Tipo_da_Issue__c", "isReOpen_Jira__c", "isDone_jira__c", "E_mail_da_Conta__c", "Nivel_Encerramento_1__c", "Nivel_Encerramento_2__c", "Nivel_Encerramento_3__c", "Nivel_Encerramento_4__c", "Nivel_Encerramento_5__c", "Nivel_Encerramento_6__c", "Farma_Associacoes_e_Redes__c", "Delay_55_secs__c", "Nivel_Encerramento_10__c", "Nivel_Encerramento_7__c", "Nivel_Encerramento_8__c", "Nivel_Encerramento_9__c", "data_release_jira__c", "fix_version_jira__c", "URL_da_Base_de_Conhecimento_Utilizada__c", "base_de_conhecimento__c", "Motivo_Contestacao__c", "Acesso_ao_portal_dos_canais__c", "Chamado_Aberto__c", "Descricao_de_cancelamento__c", "Escalado__c", "Created_By_Viewer__c", "Link_Numero_Caso__c", "Related_contact_View__c", "DDDCelular__c", "DDD__c", "MobilePhone__c", "Phone__c", "Email_BigRetail__c", "Celular_Solicitante__c", "Email_Solicitante__c", "Email_do_contato__c", "Telefone_Solicitante__c", "Direcionado_Fila_Conta__c", "Sem_Fila_Conta__c", "Notas_Acima_de_4__c", "Delay_X_secs__c", "DataMesclagem__c", "Solicitante_Jira__c", "VersaoAfetada_Jira__c", "Criado_Visualizador__c", "Unidade_de_Negocio_Visivel__c", "Caso_original__c", "Data_da_Mesclagem__c", "WebCnpjCpf__c", "Unidade_de_Negocio_de_Abertura__c", "Vertical_de_Abertura__c", "DataDesvinculoIssue__c", "DataVinculoIssue__c", "Proprietario_Violacao_SLA__c", "Unidade_de_negocio_violacao_SLA__c", "Data_primeira_interacao_feed__c", "Data_ultima_interacao_feed__c", "Aberto_pelo_Franqueado__c", "IsFranquia__c", "Registro_de_Chamada__c", "fmlCaseSourceID__c", "fml_Registro_de_Chamada_c__c", "EnderecoConta__c", "infos_zabbix__c", "Classificacao_de_abertura__c", "Resolvido_por__c", "IdContaLinx__c", "UnidadeNegocioCasoPai__c", "WO_encerrada__c", "WO_relacionada__c", "Urljira__c", "EquipeProprietarioCaso__c", "CreateCase__c", "ProdutoConectividade__c", "Attachments", "Avalia_o_Atendimento_Knowledge_Base__r", "CaseArticles", "CaseComments", "CaseContactRoles", "CaseExternalDocuments", "CaseMilestones", "CaseSolutions", "Cases", "Caso_original__r", "Casos_Contestacoes_de_Valores__r", "Casos__r", "CombinedAttachments", "Conta_Aberto__r", "Conta_Fechado__r", "Contact", "ContactRequests", "Contato_Aberto__r", "ContentDocumentLinks", "CreatedBy", "EmailMessages", "Emails", "EventRelations", "Events", "FeedSubscriptionsForEntity", "Histories", "IdContaLinx__r", "LastModifiedBy", "LiveChatTranscripts", "MasterRecord", "MessagingSessions", "OpenActivities", "Owner", "Parent", "Posts", "ProcessInstances", "ProcessSteps", "Product__r", "RecordActionHistories", "RecordActions", "RecordAssociatedGroups", "RecordType", "Registro_de_Chamada__r", "Registros_de_Chamadas__r", "RelatedRecords", "Resolvido_por__r", "Responsavel_no_Local__r", "Shares", "Solicitante__r", "Source", "SurveySubjectEntities", "TaskRelations", "Tasks", "TeamMembers", "TeamTemplateRecords", "TopicAssignments", "UnidadeNegocioCasoPai__r", "WorkOrders", "ActivityHistories", "AttachedContentDocuments", "AttachedContentNotes", "ArtigoAvaliado__c", "YouComm_Ticket_Number__c", "Id_Chamado_Maker__c", "Integracao_CNPJ__c", "Tratativa_Externa_Maker__c", "nAcionarCaseAssignmentRule__c", "Aberto_pelo_Franqueado__r"}),
+				    #"Linhas Filtradas3" = Table.SelectRows(#"Colunas Removidas", each ([Nivel_2__c] = "RESCISÕES/REDUÇÕES")),
+				    #"Linhas Filtradas2" = Table.SelectRows(#"Linhas Filtradas3", each ([Status] = "Aguardando Cliente Validar" or [Status] = "Aguardando Informacao Externa" or [Status] = "Em aberto" or [Status] = "Em Andamento"))
+				in
+				    #"Linhas Filtradas2"</Partition></Partitions></Tabela><Tabela nome="DateTableTemplate_6fb6f099-1102-4f7d-b901-075798021227"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="DateTableTemplate_6fb6f099-1102-4f7d-b901-075798021227" /></Partitions></Tabela><Tabela nome="LocalDateTable_0030387a-34c6-4254-867c-15230e723c10"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_0030387a-34c6-4254-867c-15230e723c10" /></Partitions></Tabela><Tabela nome="LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773" /></Partitions></Tabela><Tabela nome="LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327" /></Partitions></Tabela><Tabela nome="LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36" /></Partitions></Tabela><Tabela nome="LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5" /></Partitions></Tabela><Tabela nome="LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d" /></Partitions></Tabela><Tabela nome="LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e" /></Partitions></Tabela><Tabela nome="LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e" /></Partitions></Tabela><Tabela nome="LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6" /></Partitions></Tabela><Tabela nome="LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7" /></Partitions></Tabela><Tabela nome="LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429" /></Partitions></Tabela><Tabela nome="LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584" /></Partitions></Tabela><Tabela nome="LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6" /></Partitions></Tabela><Tabela nome="LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0" /></Partitions></Tabela><Tabela nome="LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702" /></Partitions></Tabela><Tabela nome="LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9" /></Partitions></Tabela><Tabela nome="LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a" /></Partitions></Tabela><Tabela nome="LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8" /></Partitions></Tabela><Tabela nome="LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97" /></Partitions></Tabela><Tabela nome="LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1" /></Partitions></Tabela><Tabela nome="LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede" /></Partitions></Tabela><Tabela nome="LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027" /></Partitions></Tabela><Tabela nome="LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a" /></Partitions></Tabela><Tabela nome="LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2"><Colunas><Coluna nome="Date" tipo="dateTime" /><Coluna nome="Ano" tipo="int64" /><Coluna nome="MonthNo" tipo="int64" /><Coluna nome="Mês" tipo="string" /><Coluna nome="QuarterNo" tipo="int64" /><Coluna nome="Trimestre" tipo="string" /><Coluna nome="Dia" tipo="int64" /></Colunas><Medidas /><Partitions><Partition nome="LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2" /></Partitions></Tabela><Tabela nome="Medidas"><Colunas><Coluna nome="Value" tipo="desconhecido" /></Colunas><Medidas><Medida nome="Valor_Churn_Futuro">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]&gt;TODAY()))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_Geral">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_Ano_Atual">```
+			
+			var churn = CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual',AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]&lt;=TODAY(),'0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ))))
+			var zeros = IF(churn=BLANK(),0,churn) 
+			return 
+			zeros 
+			```
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_Ano_Anterior">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual',AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano]&lt;=TODAY(),'0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=2024)))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Versao_Churning">"v0.1"
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_Ano_Atual_e_Futuro">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=2025))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_Ano_Atual_e_Futuro_Rescisao">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual', AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ),'0_Perdas_Detalhadas_Atual'[Tipo]="RESCISÃO")))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_Ano_Atual_e_Futuro_Reducao">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual', AND('0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano]=YEAR( TODAY() ),'0_Perdas_Detalhadas_Atual'[Tipo]="REDUÇÃO")))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_Acumulado_Reducao_Atual">CALCULATE([YTD_Churn_Atual_2026],
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Tipo]="REDUÇÃO"))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_Acumulado_Rescisao_Atual">CALCULATE([YTD_Churn_Atual_2026],
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Tipo]="RESCISÃO"))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Versao_Churn">"v1.5"</Medida><Medida nome="Churn_Acumulado_Direto_Atual">CALCULATE([YTD_Churn_Atual_2026],
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[GR_DIRETO_INDIRETO]="DIRETO"))
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_Acumulado_Indireto_Atual">CALCULATE([YTD_Churn_Atual_2026],
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[GR_DIRETO_INDIRETO]="INDIRETO"))
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_MTD_Acumulado_AnoAnterior">CALCULATE([Valor_Churn_Geral],DATEADD('1_Calendario'[Date],-1,YEAR),ALL('1_Calendario'))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Churn_MAtual-MAnoAnterior">[YTD_Churn_Atual_2026]-[Churn_MTD_Acumulado_AnoAnterior]
+		displayFolder: Churn_Acumulado</Medida><Medida nome="DifAatual_Apassado">[YTD_Churn_Atual_2026]-[YTD_Churn_Atual_Geral]
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_2024">IF(CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2024))&gt; 0,
+			CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2024)),
+			BLANK())
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_Geral">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Diferenca_Atual">[YTD_Churn_Atual_2026] - [YTD_Churn_Atual_2025]
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_DiferencaPercent_Atual">([YTD_Churn_Atual_2026] - [YTD_Churn_Atual_Geral]) / [YTD_Churn_Atual_Geral]
+		formatString: 0%;-0%;0%
+		displayFolder: Churn_Acumulado</Medida><Medida nome="BacklogTotal">CALCULATE(COUNT('5_Casos'[CaseNumber]))
+		formatString: 0
+		displayFolder: Backlog</Medida><Medida nome="IdadeCaso">AVERAGE('5_Casos'[Idade_do_Caso_em_Dias__c])
+		displayFolder: Backlog</Medida><Medida nome="BacklogProcessado">```
+			
+			var backlog = COUNT('5.1_1 2Ent_Churn_Backlog_Geral_Processado'[Número do caso])
+			var zeros = IF(backlog=BLANK(),0,backlog) 
+			return 
+			zeros 
+			```
+		formatString: 0
+		displayFolder: Backlog</Medida><Medida nome="Diferenca_Atual">[YTD_Churn_Atual_Geral] - [Valor_Churn_Ano_Anterior]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="DiferencaPercent_Atual">([YTD_Churn_Atual_Geral] - [Valor_Churn_Ano_Anterior]) / [Valor_Churn_Ano_Anterior]
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Churn_Acumulado</Medida><Medida nome="BNP_Reducao_Rescisao">```
+			
+			var valor = 
+			CALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),
+			FILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_SUBSUBTIPO]="REDUÇÃO/RESCISÃO"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="BNP_Inadimplencia">```
+			
+			var valor = 
+			CALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),
+			FILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_SUBSUBTIPO]="INADIMPLÊNCIA"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="BNP_GR_Direto">```
+			
+			var valor = 
+			CALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),
+			FILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_GR_DIRETO_INDIRETO]="DIRETO"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="BNP_GR_InDireto">```
+			
+			var valor = 
+			CALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]),
+			FILTER('0_Backlog_NProcessado','0_Backlog_NProcessado'[_GR_DIRETO_INDIRETO]="INDIRETO"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="BNP_Valor">```
+			
+			var valor = 
+			CALCULATE(SUM('0_Backlog_NProcessado'[Valor Redução]))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			valor 
+			```
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="COB_Valor_Receber">CALCULATE(SUM('0_Cobranca'[Valor a Receber]))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Cobrança</Medida><Medida nome="COB_Valor_Vencido">CALCULATE(SUM('0_Cobranca'[Valor Vencido + Juros e Multa]))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Cobrança</Medida><Medida nome="COB_Contestacoes">```
+			
+			var valor = CALCULATE(COUNT('0_Cobranca'[Contestacao]),
+			FILTER('0_Cobranca','0_Cobranca'[Contestacao]="SIM"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: 0
+		displayFolder: Cobrança</Medida><Medida nome="COB_Faturas">```
+			
+			var valor = CALCULATE(COUNT('0_Cobranca'[Fatura]))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: 0
+		displayFolder: Cobrança</Medida><Medida nome="COB_Clientes">```
+			
+			var valor = CALCULATE(DISTINCTCOUNT('0_Cobranca'[CNPJ]))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: 0
+		displayFolder: Cobrança</Medida><Medida nome="COB_Valor_Contestacoes">```
+			
+			var valor = CALCULATE(SUM('0_Cobranca'[Valor a Receber]),
+			FILTER('0_Cobranca','0_Cobranca'[Contestacao]="SIM"))
+			var zeros = IF(valor=BLANK(),0,valor) 
+			return 
+			zeros 
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Cobrança</Medida><Medida nome="Valor_Churn_2025">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano] = 2025))
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		displayFolder: Churn_Acumulado</Medida><Medida nome="BNP_Valor_pTotal">```
+			
+			DIVIDE(
+			    [BNP_Valor],
+			    CALCULATE(
+			        [BNP_Valor],
+			        ALLSELECTED('0_Backlog_NProcessado')
+			    )
+			) 
+			
+			```
+		formatString: 0%;-0%;0%
+		displayFolder: Backlog_NProcessado</Medida><Medida nome="Valor_Churn_2025_pTotal">DIVIDE(
+			    [Valor_Churn_2025],
+			    CALCULATE(
+			        [Valor_Churn_2025],
+			        ALLSELECTED('0_Perdas_Detalhadas_Atual')
+			    )
+			)
+		formatString: 0%;-0%;0%
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_Geral_pTotal">DIVIDE(
+				[Valor_Churn_Geral],
+				CALCULATE(
+			        	[Valor_Churn_Geral],
+				        ALLSELECTED('0_Perdas_Detalhadas_Atual')
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_2026">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2026))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_2026">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			FILTER('0_Perdas_Detalhadas_Atual','0_Perdas_Detalhadas_Atual'[Descrição Mês Ano].[Ano] = 2026))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="LegendaMedida">```
+			
+			IF(
+			    ISBLANK([YTD_Churn_Atual_2024]),
+			    BLANK(),
+			    "Churn Atual 2024"
+			)
+			
+			```
+		displayFolder: Churn_Acumulado</Medida><Medida nome="LegendaSemBranco">```
+			
+			IF(
+			    ISBLANK('Tabela'[SuaLegenda]) || 'Tabela'[SuaLegenda] = "",
+			    BLANK(),
+			    'Tabela'[SuaLegenda]
+			)
+			
+			```
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Legenda_Rescisao_2024">IF(
+			    NOT ISBLANK([ValorRescisao_2024]),
+			    SELECTEDVALUE('0_Perdas_Detalhadas_Atual'[Valor Redução]),
+			    BLANK()
+			)
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_2025">CALCULATE(SUM('0_Perdas_Detalhadas_Atual'[Valor Redução]),FILTER('1_Calendario','1_Calendario'[Date].[Ano]=2025))
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: Churn_Acumulado</Medida><Medida nome="Valor_Churn_Geral_pTotal">DIVIDE(
+			    [Valor_Churn_Geral],
+			    CALCULATE(
+			        [Valor_Churn_Geral],
+			        ALLSELECTED('0_Perdas_Detalhadas_Atual')
+			    )
+			)
+		formatString: 0%;-0%;0%
+		displayFolder: Churn_Acumulado</Medida><Medida nome="YTD_Churn_Atual_2025_pTotal">DIVIDE(
+				[YTD_Churn_Atual_2025],
+				CALCULATE(
+			        	[YTD_Churn_Atual_2025],
+				        ALLSELECTED('0_Perdas_Detalhadas_Atual')
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Churn_Acumulado</Medida></Medidas><Partitions><Partition nome="Medidas" /></Partitions></Tabela></Tabelas><Relacionamentos><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.'Data Inclusão'" toTable="" toColumn="LocalDateTable_dd17a6ff-c312-4626-a5b1-e0db65296ede.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.'Data Implantacao'" toTable="" toColumn="LocalDateTable_c6cfe084-ac9b-436b-a890-653770c230e8.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.'Data do Cadastro'" toTable="" toColumn="LocalDateTable_db03d42c-7fab-492b-b928-26a68881f5c1.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.'Data Conclusão'" toTable="" toColumn="LocalDateTable_b6233a99-0417-4441-9644-a4d5f4832cf9.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.'Data Inclusão'" toTable="" toColumn="LocalDateTable_b90a5ab9-548f-4547-bfa4-2c6cd886ed7a.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.'Data Implantacao'" toTable="" toColumn="LocalDateTable_1b5aaa00-b31d-40ad-834a-92b60de2ec36.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.'Data do Cadastro'" toTable="" toColumn="LocalDateTable_44e784ab-533c-48e9-859e-775326ec442d.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.'Data Conclusão'" toTable="" toColumn="LocalDateTable_7ab4d899-d413-4ae1-a2d5-ff82066b9eb7.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.'Descrição Mês Ano'" toTable="" toColumn="LocalDateTable_1369fba6-908e-4b9b-83a0-f421c5372327.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.'Descrição Mês Ano'" toTable="" toColumn="LocalDateTable_fae336ed-4cbb-423a-abac-b310ee6d55b2.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.ClosedDate" toTable="" toColumn="LocalDateTable_eec94af9-deb0-434d-b2df-2640fc0e6027.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.Resolvido_em__c" toTable="" toColumn="LocalDateTable_90c33327-c3c5-4b0d-b518-51ec0a1ae9a0.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.Data_Final_SLA__c" toTable="" toColumn="LocalDateTable_b09814b0-8e40-4bc2-a448-70fc5b485702.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.Data_Inicio_SLA__c" toTable="" toColumn="LocalDateTable_ccdc4f8f-2670-432a-b6bb-cc45b13a8a97.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.LastModifiedDate" toTable="" toColumn="LocalDateTable_439dc46a-df99-4d4d-a100-7a45f67568b5.Date" /><Relacionamento fromTable="" fromColumn="'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.'Data de criação'" toTable="" toColumn="LocalDateTable_f97f66da-59cb-4ec4-a354-40374af70e6a.Date" /><Relacionamento fromTable="" fromColumn="'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.'Data da última modificação'" toTable="" toColumn="LocalDateTable_8026b180-0064-4953-aac6-b67e5d8fc584.Date" /><Relacionamento fromTable="" fromColumn="0_Backlog_NProcessado.'Data do Cadastro'" toTable="" toColumn="LocalDateTable_57d7976b-f683-4858-a4e9-e7a933658f5e.Date" /><Relacionamento fromTable="" fromColumn="0_Cobranca.Vencimento" toTable="" toColumn="LocalDateTable_7c80d8e1-4ea6-4a84-931b-5595b755a429.Date" /><Relacionamento fromTable="" fromColumn="0_Cobranca.'Vencimento Real'" toTable="" toColumn="LocalDateTable_63f10bc6-f2d6-4c17-8c21-ae9cb06edec6.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.CreatedDate" toTable="" toColumn="LocalDateTable_0030387a-34c6-4254-867c-15230e723c10.Date" /><Relacionamento fromTable="" fromColumn="1_Calendario.Date" toTable="" toColumn="LocalDateTable_0ee656bd-eb1a-4472-b3d3-144b461b0773.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_2024.DataReferencia" toTable="" toColumn="1_Calendario.Date" /><Relacionamento fromTable="" fromColumn="0_Perdas_Detalhadas_Atual.DataReferencia" toTable="" toColumn="1_Calendario.Date" /><Relacionamento fromTable="" fromColumn="0_Backlog_NProcessado.DataReferencia" toTable="" toColumn="1_Calendario.Date" /><Relacionamento fromTable="" fromColumn="5_Casos._DataReferencia" toTable="" toColumn="1_Calendario.Date" /><Relacionamento fromTable="" fromColumn="'5.1_1 2Ent_Churn_Backlog_Geral_Processado'.DataReferencia" toTable="" toColumn="5_Casos._DataReferencia" /><Relacionamento fromTable="" fromColumn="0_Cobranca.Emissão" toTable="" toColumn="1_Calendario.Date" /><Relacionamento fromTable="" fromColumn="5_Casos.sftv__tvExpirationDate__c" toTable="" toColumn="LocalDateTable_89f5acc6-3e97-4c14-ac6c-66ae87dd61e6.Date" /><Relacionamento fromTable="" fromColumn="1_Calendario.'Mes Ano'" toTable="" toColumn="LocalDateTable_5584f828-ab45-425c-a186-9de4e674bd5e.Date" /></Relacionamentos><Paginas><Pagina id="20d074bf2ab683db8038" nome="Acumulado Dados"><Visuais><Visual tipo="" quantidade="4" /></Visuais></Pagina><Pagina id="30f76f3dca5d261cb18c" nome="Acumulado Analítico"><Visuais><Visual tipo="" quantidade="5" /></Visuais></Pagina><Pagina id="321e9bb57257a985b066" nome="Versão"><Visuais><Visual tipo="" quantidade="1" /></Visuais></Pagina><Pagina id="79e41c93ad6293c482eb" nome="Capa"><Visuais /></Pagina><Pagina id="9df0ec80b615db0fb5b6" nome="Backlog Não Processado Dados"><Visuais><Visual tipo="" quantidade="2" /></Visuais></Pagina><Pagina id="a6204462732deac407d8" nome="Acumulado por Tipo"><Visuais><Visual tipo="" quantidade="18" /></Visuais></Pagina><Pagina id="aa5c3132081666051780" nome="Cobrança"><Visuais><Visual tipo="" quantidade="28" /></Visuais></Pagina><Pagina id="db4f34fbbe50d2ad0cb9" nome="Backlog"><Visuais><Visual tipo="" quantidade="26" /></Visuais></Pagina><Pagina id="f4fce92e0b07191a819d" nome="Backlog Não Processado"><Visuais><Visual tipo="" quantidade="31" /></Visuais></Pagina><Pagina id="fa2f8571d6cb6ab8cabd" nome="Acumulado"><Visuais><Visual tipo="" quantidade="26" /></Visuais></Pagina></Paginas></DocumentacaoPBIP>
