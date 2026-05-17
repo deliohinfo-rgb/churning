@@ -11,7 +11,8 @@ Caminho: Documentos/BI_Churn
 
 - Tabela no Sharepoint: **Backlog_NProcessado**
 - Tabela no PowerBI: 0_Backlog_NProcessado
-- BI de Referência / Painel / Visual: 
+- BI de Referência / Painel / Visual:
+- Campos: 
 - Tabela no Sharepoint: **Cobranca**
 - Tabela no PowerBI: 0_Cobranca
 - BI de Referência / Painel / Visual: 
